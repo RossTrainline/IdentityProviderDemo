@@ -1,7 +1,7 @@
 using Duende.IdentityServer;
-using Duende;
 using IdentityServerDemo.Pages;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 namespace IdentityServerDemo;
@@ -29,7 +29,6 @@ internal static class HostingExtensions
         isBuilder.AddInMemoryApiScopes(Config.ApiScopes);
         isBuilder.AddInMemoryClients(Config.Clients);
 
-
         // if you want to use server-side sessions: https://blog.duendesoftware.com/posts/20220406_session_management/
         // then enable it
         //isBuilder.AddServerSideSessions();
@@ -44,15 +43,31 @@ internal static class HostingExtensions
 
 
         builder.Services.AddAuthentication()
-            .AddGoogle(options =>
+            .AddOpenIdConnect("oidc", options =>
             {
-                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                options.Authority = "https://localhost:5001";
+                options.ClientId = "b2b.idp";
+                options.ClientSecret = "client-secret";
 
-                // register your IdentityServer with Google at https://console.developers.google.com
-                // enable the Google+ API
-                // set the redirect URI to https://localhost:5002/signin-google
-                options.ClientId = "copy client ID from Google here";
-                options.ClientSecret = "copy client secret from Google here";
+                options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                options.CallbackPath = "/signin-oidc";
+
+                options.ResponseType = OpenIdConnectResponseType.Code;
+                options.ResponseMode = OpenIdConnectResponseMode.Query;
+
+                options.Scope.Clear();
+                options.Scope.Add(IdentityServerConstants.StandardScopes.OpenId);
+                options.Scope.Add(IdentityServerConstants.StandardScopes.Profile);
+                options.Scope.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
+
+                options.GetClaimsFromUserInfoEndpoint = true;
+                options.SaveTokens = true;
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = options.Authority,
+                    ValidAudience = options.ClientId
+                };
             });
 
         return builder.Build();
