@@ -3,8 +3,8 @@ Example solution to demonstrate IdentityServer being used as an identity provide
 
 This solution contains two projects; an instance of IdentityServer running as an IDP and an instance of IdentityServer providing access control. Both projects have been created using Duende IdentityServer.Templates (dotnet new isinmem). They contain in-memory users, clients and resources rather than using a database implementation for these objects.
 
-- The IdentityServer instance uses `AddOpenIdConnect()` to register the new identity provider in `HostingExtensions.cs`.
-- The IdentityProvider instance has the IdentityServer instance added as a `Client` in `Config.cs`.
+- The IdentityServer instance uses `AddOpenIdConnect()` to register the new identity provider in `HostingExtensions.cs`
+- The IdentityProvider instance has the IdentityServer instance added as a `Client` in `Config.cs`
 
 ### Instructions for running locally
 
@@ -14,10 +14,10 @@ This solution contains two projects; an instance of IdentityServer running as an
 + Click ***OpenIdConnect*** in the external account box (this redirects to the demo IdentityProvider instance on port 5001)
 + Enter credentials (bob/bob or alice/alice) and click ***Login***
 + You should then be authenticated and redirected back the the IdentityServer instance
-+ On logging out you are redirected back to a logout page on the identity provider instance.
++ On logging out you are redirected back to a logout page on the identity provider instance
 
-###Sequence Diagram
-                    
+### Sequence Diagram
+
 ```seq
 Note left of IdentityServer: User Clicks OpenIdConnect on login screen
 IdentityServer->IdentityProvider: Redirect to /connect/authorize endpoint
